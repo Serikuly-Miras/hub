@@ -4,12 +4,9 @@ The goal is to document progress alongside the source code, demonstrating a deli
 
 ## Todo
 
-- [x] Initial setup and k3s
+- [x] [Initial setup and k3s](initial-setup/prep-work.md)
 - [ ] Postgres DB storing blog posts
-- [x] Auto TLS with Traefik & Let's Encrypt
+- [x] [Auto TLS setup](traefik/auto-tls.md)
 - [ ] Axum backend
 - [ ] React frontend
 - [ ] At least 3 interesting blog posts
-
-[Initial setup and k3s](initial-setup/prep-work.md)
-[Auto TLS setup](traefik/auto-tls.md)
