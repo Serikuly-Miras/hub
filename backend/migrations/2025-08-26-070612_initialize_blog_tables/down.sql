@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS blogs;
+
+DROP TABLE IF EXISTS blog_tags;
+
+DROP TABLE IF EXISTS tags;
+
+DROP TABLE IF EXISTS blog_statuses;
