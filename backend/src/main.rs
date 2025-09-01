@@ -1,19 +1,18 @@
+use crate::adapters::web::health::health_check_routes;
 use crate::core::{app_error::AppError, docs::docs_routes};
-use aide::axum::routing::get_with;
-use aide::transform::TransformOperation;
 use aide::{axum::ApiRouter, openapi::OpenApi, transform::TransformOpenApi};
 use appstate::AppState;
 use axum::{Extension, Json};
 use core::appstate;
 use reqwest::StatusCode;
-use schemars::JsonSchema;
-use serde::Serialize;
 use std::{env, sync::Arc};
 use tokio::net::TcpListener;
 use tower_http::{CompressionLevel, compression::CompressionLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+mod adapters;
 mod core;
+mod schema;
 
 #[tokio::main(flavor = "multi_thread", worker_threads = 4)]
 async fn main() -> anyhow::Result<()> {
@@ -43,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
     let mut api = OpenApi::default();
     let app = ApiRouter::new()
         .nest_api_service("/api/docs", docs_routes(state.clone()))
-        .nest_api_service("/api", health_check_routes())
+        .nest_api_service("/api/health", health_check_routes())
         .finish_api_with(&mut api, api_docs)
         .layer(Extension(Arc::new(api)))
         .with_state(state);
@@ -74,33 +73,4 @@ fn api_docs(api: TransformOpenApi) -> TransformOpenApi {
                 status: StatusCode::IM_A_TEAPOT,
             })
         })
-}
-
-// temp health logic placement
-
-#[derive(Serialize, JsonSchema)]
-pub struct HealthResponse {
-    pub status: String,
-}
-
-pub fn check_health() -> HealthResponse {
-    HealthResponse {
-        status: "ok".to_string(),
-    }
-}
-
-#[axum::debug_handler]
-async fn health_check_handler() -> Result<Json<HealthResponse>, AppError> {
-    Ok(Json(check_health()))
-}
-
-pub fn health_check_handler_docs(op: TransformOperation) -> TransformOperation {
-    op.description("Get health status.").tag("health")
-}
-
-pub fn health_check_routes() -> ApiRouter {
-    ApiRouter::new().api_route(
-        "/health",
-        get_with(health_check_handler, health_check_handler_docs),
-    )
 }

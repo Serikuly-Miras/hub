@@ -1,7 +1,7 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    blog_statuses (id) {
+    post_statuses (id) {
         id -> Int4,
         #[max_length = 63]
         name -> Varchar,
@@ -9,14 +9,14 @@ diesel::table! {
 }
 
 diesel::table! {
-    blog_tags (blog_id, tag_id) {
-        blog_id -> Int4,
+    post_tags (post_id, tag_id) {
+        post_id -> Int4,
         tag_id -> Int4,
     }
 }
 
 diesel::table! {
-    blogs (id) {
+    posts (id) {
         id -> Int4,
         #[max_length = 255]
         title -> Varchar,
@@ -36,13 +36,13 @@ diesel::table! {
     }
 }
 
-diesel::joinable!(blog_tags -> blogs (blog_id));
-diesel::joinable!(blog_tags -> tags (tag_id));
-diesel::joinable!(blogs -> blog_statuses (status));
+diesel::joinable!(post_tags -> posts (post_id));
+diesel::joinable!(post_tags -> tags (tag_id));
+diesel::joinable!(posts -> post_statuses (status));
 
 diesel::allow_tables_to_appear_in_same_query!(
-    blog_statuses,
-    blog_tags,
-    blogs,
+    post_statuses,
+    post_tags,
+    posts,
     tags,
 );
